@@ -83,6 +83,7 @@ function Hero() {
       <div className="hero-jp-large">{siteData.hero.bgText}</div>
       <span className="hero-counter">{siteData.hero.counter}</span>
       <div className="hero-content">
+        <p className="hero-person">{siteData.nameJp} <span>{siteData.name}</span></p>
         <p className="hero-eyebrow">{siteData.hero.eyebrow}</p>
         <h1 className="hero-name">
           Full-Stack<br />
