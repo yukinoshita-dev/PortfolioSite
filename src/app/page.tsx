@@ -1,12 +1,13 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { siteData } from '@/lib/data'
 
 /* ── Scroll Animations (reveal + skill bars) ── */
-function useScrollAnimations() {
+function useScrollAnimations(containerRef: React.RefObject<HTMLElement | null>) {
   useEffect(() => {
-    const revealEls = document.querySelectorAll<HTMLElement>('.reveal')
+    const container = containerRef.current ?? document
+    const revealEls = container.querySelectorAll<HTMLElement>('.reveal')
     const revealObs = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry, i) => {
@@ -20,7 +21,7 @@ function useScrollAnimations() {
     )
     revealEls.forEach((el) => revealObs.observe(el))
 
-    const skillItems = document.querySelectorAll<HTMLElement>('.skill-item')
+    const skillItems = container.querySelectorAll<HTMLElement>('.skill-item')
     const skillObs = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -45,25 +46,27 @@ function useScrollAnimations() {
       revealObs.disconnect()
       skillObs.disconnect()
     }
-  }, [])
+  }, [containerRef])
 }
 
 /* ── Nav ── */
 function Nav() {
+  const navRef = useRef<HTMLElement>(null)
   useEffect(() => {
-    const nav = document.getElementById('nav')!
+    const nav = navRef.current
+    if (!nav) return
     const handler = () => nav.classList.toggle('scrolled', window.scrollY > 60)
     window.addEventListener('scroll', handler)
     return () => window.removeEventListener('scroll', handler)
   }, [])
 
   return (
-    <nav id="nav">
-      <a href="#" className="nav-logo">./engineer</a>
+    <nav id="nav" ref={navRef}>
+      <a href="#" className="nav-logo" aria-label="トップへ戻る"></a>
       <ul className="nav-links">
-        {['About', 'Skills', 'Works', 'Experience', 'Contact'].map((label) => (
-          <li key={label}>
-            <a href={`#${label.toLowerCase()}`}>{label}</a>
+        {siteData.nav.map(({ label, href }) => (
+          <li key={href}>
+            <a href={`#${href}`}>{label}</a>
           </li>
         ))}
       </ul>
@@ -77,19 +80,19 @@ function Hero() {
     <section id="hero">
       <div className="hero-bg" />
       <div className="hero-grid" />
-      <div className="hero-jp-large">福島</div>
-      <span className="hero-counter">[ 01 / 05 ]</span>
+      <div className="hero-jp-large">{siteData.hero.bgText}</div>
+      <span className="hero-counter">{siteData.hero.counter}</span>
       <div className="hero-content">
-        <p className="hero-eyebrow">Freelance Software Engineer — {siteData.location}</p>
+        <p className="hero-eyebrow">{siteData.hero.eyebrow}</p>
         <h1 className="hero-name">
           Full-Stack<br />
           <em>Engineer</em>
         </h1>
-        <p className="hero-tagline">業務システムからクラウドインフラまで — TypeScriptで一気通貫</p>
+        <p className="hero-tagline">{siteData.hero.tagline}</p>
         <div className="hero-meta">
           {[
             { label: 'Location', value: siteData.location },
-            { label: 'Stack',    value: 'TypeScript / AWS' },
+            { label: 'Stack',    value: siteData.hero.stack },
             { label: 'Status',   value: siteData.status },
           ].map(({ label, value }) => (
             <div key={label}>
@@ -112,10 +115,10 @@ function About() {
   return (
     <section id="about">
       <div className="about-left reveal">
-        <div className="section-label">About</div>
-        <h2 className="about-heading">
-          Code<br />with<br /><em>Purpose</em>
-        </h2>
+        <div className="section-header">
+          <h2 className="section-title-jp">自己紹介</h2>
+          <div className="section-label">About</div>
+        </div>
         <p className="about-body">{siteData.about}</p>
       </div>
       <div className="about-right reveal">
@@ -134,7 +137,10 @@ function About() {
 function Skills() {
   return (
     <section id="skills">
-      <div className="section-label">Skills</div>
+      <div className="section-header">
+        <h2 className="section-title-jp">技術スタック</h2>
+        <div className="section-label">Skills</div>
+      </div>
       <div className="skills-grid reveal">
         {siteData.skills.map(({ category, name, level, label }) => (
           <div key={name} className="skill-item">
@@ -155,7 +161,10 @@ function Skills() {
 function Works() {
   return (
     <section id="works">
-      <div className="section-label">Works</div>
+      <div className="section-header">
+        <h2 className="section-title-jp">実績</h2>
+        <div className="section-label">Works</div>
+      </div>
       <div className="works-list">
         {siteData.works.map(({ num, title, desc, tags, link, linkLabel }) => (
           <div key={num} className="work-item reveal">
@@ -181,10 +190,13 @@ function Works() {
 function Experience() {
   return (
     <section id="experience">
-      <div className="section-label">Experience</div>
+      <div className="section-header">
+        <h2 className="section-title-jp">経歴</h2>
+        <div className="section-label">Experience</div>
+      </div>
       <div className="exp-list">
         {siteData.experience.map(({ period, role, company, desc }) => (
-          <div key={role} className="exp-item reveal">
+          <div key={period} className="exp-item reveal">
             <div className="exp-period">{period}</div>
             <div>
               <div className="exp-role">{role}</div>
@@ -202,14 +214,14 @@ function Experience() {
 function Contact() {
   return (
     <section id="contact">
-      <p className="contact-label">Contact</p>
+      <div className="section-header contact-header">
+        <h2 className="section-title-jp">お問い合わせ</h2>
+        <div className="section-label">Contact</div>
+      </div>
       <h2 className="contact-heading">
-        Let&apos;s work<br /><em>together</em>
+        <em>{siteData.contact.headingEm}</em>{siteData.contact.headingRest}
       </h2>
-      <p className="contact-sub">
-        案件のご相談・お見積もりはお気軽にどうぞ。<br />
-        フルリモート対応可。初回は無料でご相談いただけます。
-      </p>
+      <p className="contact-sub">{siteData.contact.sub}</p>
       <a href={`mailto:${siteData.email}`} className="contact-email reveal">
         {siteData.email}
       </a>
@@ -223,16 +235,24 @@ function Contact() {
 
 /* ── Page ── */
 export default function HomePage() {
-  useScrollAnimations()
+  const mainRef = useRef<HTMLElement>(null)
+  const cursorRef = useRef<HTMLDivElement>(null)
+  useScrollAnimations(mainRef)
 
   useEffect(() => {
-    const cursor = document.getElementById('cursor')!
+    if (window.matchMedia('(pointer: coarse)').matches) return
+    const cursor = cursorRef.current
+    if (!cursor) return
+    cursor.style.display = 'block'
+    let raf = 0
     const move = (e: MouseEvent) => {
-      cursor.style.left = e.clientX + 'px'
-      cursor.style.top = e.clientY + 'px'
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        cursor.style.left = e.clientX + 'px'
+        cursor.style.top = e.clientY + 'px'
+      })
     }
     document.addEventListener('mousemove', move)
-
     const targets = document.querySelectorAll('a, button, .skill-item, .work-item')
     const addHover = () => cursor.classList.add('hover')
     const removeHover = () => cursor.classList.remove('hover')
@@ -240,8 +260,8 @@ export default function HomePage() {
       t.addEventListener('mouseenter', addHover)
       t.addEventListener('mouseleave', removeHover)
     })
-
     return () => {
+      cancelAnimationFrame(raf)
       document.removeEventListener('mousemove', move)
       targets.forEach((t) => {
         t.removeEventListener('mouseenter', addHover)
@@ -252,14 +272,14 @@ export default function HomePage() {
 
   return (
     <>
-      <div id="cursor" />
+      <div ref={cursorRef} id="cursor" aria-hidden="true" />
       <Nav />
-      <main>
+      <main ref={mainRef}>
         <Hero />
-        <About />
         <Skills />
         <Works />
         <Experience />
+        <About />
         <Contact />
       </main>
       <footer>
