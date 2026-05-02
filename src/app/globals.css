@@ -147,8 +147,9 @@ section:not(#hero) { max-width: 1100px; margin: 0 auto; }
 .hero-bg {
   position: absolute; inset: 0;
   background:
-    linear-gradient(90deg, rgba(247,248,246,.94) 0%, rgba(247,248,246,.84) 42%, rgba(247,248,246,.58) 100%),
-    linear-gradient(180deg, rgba(255,255,255,.82) 0%, rgba(247,248,246,.78) 72%, var(--bg) 100%),
+    linear-gradient(90deg, rgba(247,248,246,.90) 0%, rgba(247,248,246,.72) 34%, rgba(247,248,246,.24) 100%),
+    linear-gradient(90deg, rgba(247,248,246,0) 38%, rgba(31,42,36,.58) 100%),
+    linear-gradient(180deg, rgba(255,255,255,.68) 0%, rgba(247,248,246,.60) 68%, rgba(247,248,246,.86) 100%),
     url('../img/hero.png') center / cover no-repeat;
 }
 

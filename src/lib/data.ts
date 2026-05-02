@@ -154,7 +154,7 @@ export const siteData = {
     bgText: '',
     counter: '[ 01 / 05 ]',
     eyebrow: 'AI-Driven Engineer — 業務システム改善 / レガシー刷新',
-    tagline: '業務理解とAI駆動開発で、既存システムの改善を速く、堅く、現実的に進めます',
+    tagline: '相手の立場に寄り添いながら進める設計と改善の推進力',
     stack: 'C# / TypeScript / AI Dev',
   },
 
